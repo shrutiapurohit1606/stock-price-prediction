@@ -29,6 +29,8 @@ Run the script:
 ```
 python stock_prediction.py
 ```
+## Example Graph
 
+![Stock Prediction](prediction_graph.png)
 ## Author
 Shruti Purohit
