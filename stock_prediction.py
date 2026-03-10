@@ -2,62 +2,71 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
-# 1. Download stock data
-print("Downloading stock data...")
-data = yf.download("AAPL", start="2020-01-01", end="2024-01-01")
+# Seaborn styling
+sns.set_theme(style="darkgrid")
 
-# 2. Keep only closing price
+# Get stock ticker from user
+ticker = input("Enter stock ticker (Example: AAPL, TSLA, MSFT): ")
+
+print("Downloading stock data...")
+data = yf.download(ticker, start="2018-01-01", end="2024-01-01")
+
+# Use closing price
 data = data[['Close']]
 
-# 3. Predict 30 days into the future
-future_days = 30
-data['Prediction'] = data['Close'].shift(-future_days)
+# Create future prediction column
+forecast_days = 30
+data['Prediction'] = data[['Close']].shift(-forecast_days)
 
-# 4. Prepare feature and target data
-X = np.array(data.drop(['Prediction'], axis=1))[:-future_days]
-y = np.array(data['Prediction'])[:-future_days]
+# Features and labels
+X = np.array(data.drop(['Prediction'], axis=1))[:-forecast_days]
+y = np.array(data['Prediction'])[:-forecast_days]
 
-# 5. Train/Test split
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+# Train test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-# 6. Train model
+# Train model
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# 7. Test prediction
-pred_test = model.predict(X_test)
+# Test prediction
+predictions = model.predict(X_test)
 
-# 8. Calculate error
-mse = mean_squared_error(y_test, pred_test)
+# Model error
+mse = mean_squared_error(y_test, predictions)
 print("Model Mean Squared Error:", mse)
 
-# 9. Predict future prices
-future = np.array(data.drop(['Prediction'], axis=1))[-future_days:]
-future_predictions = model.predict(future)
+# Predict future prices
+future_X = np.array(data.drop(['Prediction'], axis=1))[-forecast_days:]
+future_predictions = model.predict(future_X)
 
 print("\nPredicted Prices for Next 30 Days:")
 print(future_predictions)
 
+# Graph 1: Historical Prices
 plt.figure(figsize=(12,6))
-
-plt.subplot(1,2,1)
-plt.plot(data['Close'])
-plt.title("Stock Price History")
-plt.xlabel("Days")
+sns.lineplot(x=data.index, y=data['Close'].values.flatten(), label="Historical Price")
+plt.title(f"{ticker} Stock Price History")
+plt.xlabel("Date")
 plt.ylabel("Price")
+plt.legend()
+plt.show()
 
-plt.subplot(1,2,2)
-plt.plot(future_predictions)
-plt.title("Predicted Next 30 Days")
-plt.xlabel("Days")
-plt.ylabel("Predicted Price")
+#  Graph 2: Predictions
+future_dates = pd.date_range(start=data.index[-1], periods=forecast_days+1)
 
-plt.tight_layout()
+plt.figure(figsize=(12,6))
+sns.lineplot(x=data.index, y=data['Close'].values.flatten(), label="Historical Price")
+sns.lineplot(x=future_dates[1:], y=future_predictions, label="Predicted Price")
+
+plt.title(f"{ticker} Stock Price Prediction (Next 30 Days)")
+plt.xlabel("Date")
+plt.ylabel("Price")
+plt.legend()
 plt.show()
