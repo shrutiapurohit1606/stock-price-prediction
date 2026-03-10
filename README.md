@@ -25,7 +25,7 @@ A Python machine learning project that predicts future stock prices using histor
 * Predicted price graph
 * Future price predictions
 
+##Author
+Shruti Purohit
 ##  Author
 Shruti Purohit
-
-Aditya
