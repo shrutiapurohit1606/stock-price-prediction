@@ -29,8 +29,13 @@ Run the script:
 ```
 python stock_prediction.py
 ```
-## Example Graph
+## Example Output
 
-![Stock Prediction](prediction_graph.png)
+### Stock Price History
+![History](stock_price_history.png)
+
+### Stock Price Prediction
+![Prediction](stock_price_prediction.png)
+---
 ## Author
 Shruti Purohit
