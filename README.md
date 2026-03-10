@@ -17,5 +17,18 @@ A Python machine learning project that predicts future stock prices using histor
 * Stock price graph
 * Predicted price graph
 * Future price predictions
+## Run the Project
+
+Install required libraries:
+
+```
+pip install pandas numpy matplotlib scikit-learn yfinance
+
+Run the script:
+
+```
+python stock_prediction.py
+```
+
 ## Author
 Shruti Purohit
